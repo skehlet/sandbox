@@ -1,0 +1,29 @@
+#!/usr/bin/expect -f
+set badprompt " ~]# "
+set CTRLZ \032
+
+log_user 0
+spawn ssh {*}$argv
+log_user 1
+
+expect_background {
+    $badprompt {
+        send {PS1="[\@] \h:\w \\$ "
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias l='ls -la'
+alias ls='ls --color=auto -F'
+export LS_COLORS='no=00:fi=00:di=01;33:ln=01;36:pi=40;33:so=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=01;05;37;41:ex=01;32:*.cmd=01;31:*.exe=01;31:*.com=01;31:*.btm=01;32:*.bat=01;31:*.sh=01;32:*.csh=01;32:*.tar=01;31:*.tgz=01;31:*.rar=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.bz=01;31:*.tz=01;31:*.rpm=01;31:*.cpio=01;31:*.jpg=01;35:*.gif=01;35:*.bmp=01;35:*.xbm=01;35:*.xpm=01;35:*.png=01;35:*.tif=01;35:';
+function pagedone() { local pat=$1; while true; do pids=$(ps -efww | grep "$pat" | grep -v grep | awk '{print $2}'); if [ -z "$pids" ]; then type -P curl >/dev/null 2>&1 && curl --user skehlet:x6cd515fb9a2f80bc29ec6e219efcfcdef361cde3 -d label=pagedone -d title=done -d msg=$pat https://api.notifo.com/v1/send_notification || wget -q -O - --user skehlet --password x6cd515fb9a2f80bc29ec6e219efcfcdef361cde3 --post-data "label=pagedone&title=done&msg=$pat" https://api.notifo.com/v1/send_notification; break; fi; done }
+bind "set match-hidden-files off"
+}
+        expect_background
+    }
+}
+
+catch { 
+    interact {
+        -reset ~$CTRLZ {exec kill -TSTP [pid]}
+    }
+}
