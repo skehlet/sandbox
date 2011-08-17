@@ -1,5 +1,5 @@
 #!/usr/bin/expect -f
-set badprompt " ~]# "
+set badprompt "# "
 set CTRLZ \032
 
 log_user 0
