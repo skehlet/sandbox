@@ -6,6 +6,14 @@ log_user 0
 spawn ssh {*}$argv
 log_user 1
 
+# catch and pass SIGWINCH (window resizing) on to spawn process
+trap {
+    set rows [stty rows]
+    set cols [stty columns]
+    #puts "resizing to $rows and $cols"
+    stty rows $rows columns $cols < $spawn_out(slave,name)
+} WINCH
+
 expect_background {
     $badprompt {
         send {PS1="[\@] \h:\w \\$ "
