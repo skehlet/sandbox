@@ -1,0 +1,130 @@
+{
+  "channels": [
+    {
+      "id": "c0d98421-1b1e-41ed-a633-18e22fb99990",
+      "name": "stevek1",
+      "description": "",
+      "enabled": true,
+      "version": "2.2.0",
+      "lastModified": 1313457282886,
+      "revision": 1,
+      "sourceConnector": {
+        "name": "sourceConnector",
+        "properties": {
+          "DataType": "Channel Reader",
+          "responseValue": "None"
+        },
+        "transformer": {
+          "steps": [],
+          "inboundProtocol": "HL7V2",
+          "outboundProtocol": "HL7V2",
+          "inboundProperties": {
+            "handleRepetitions": "false",
+            "stripNamespaces": "true",
+            "convertLFtoCR": "true",
+            "useStrictValidation": "false",
+            "useStrictParser": "false",
+            "handleSubcomponents": "false"
+          },
+          "outboundProperties": {
+            "handleRepetitions": "false",
+            "stripNamespaces": "true",
+            "convertLFtoCR": "true",
+            "useStrictValidation": "false",
+            "useStrictParser": "false",
+            "handleSubcomponents": "false"
+          }
+        },
+        "filter": {
+          "rules": []
+        },
+        "transportName": "Channel Reader",
+        "mode": "SOURCE",
+        "enabled": true,
+        "version": "2.2.0"
+      },
+      "destinationConnectors": [
+        {
+          "name": "Destination 1",
+          "properties": {
+            "synchronised": "0",
+            "DataType": "Channel Writer",
+            "template": "${message.encodedData}",
+            "host": "sink"
+          },
+          "transformer": {
+            "steps": [],
+            "inboundProtocol": "HL7V2",
+            "outboundProtocol": "HL7V2",
+            "inboundProperties": {
+              "handleRepetitions": "false",
+              "stripNamespaces": "true",
+              "convertLFtoCR": "true",
+              "useStrictValidation": "false",
+              "useStrictParser": "false",
+              "handleSubcomponents": "false"
+            },
+            "outboundProperties": {
+              "handleRepetitions": "false",
+              "stripNamespaces": "true",
+              "convertLFtoCR": "true",
+              "useStrictValidation": "false",
+              "useStrictParser": "false",
+              "handleSubcomponents": "false"
+            }
+          },
+          "filter": {
+            "rules": []
+          },
+          "transportName": "Channel Writer",
+          "mode": "DESTINATION",
+          "enabled": true,
+          "version": "2.2.0"
+        }
+      ],
+      "properties": {
+        "synchronous": "true",
+        "clearGlobalChannelMap": "true",
+        "transactional": "false",
+        "initialState": "started",
+        "dont_store_filtered": "false",
+        "error_messages_only": "false",
+        "max_message_age": "-1",
+        "store_messages": "true",
+        "encryptData": "false"
+      },
+      "preprocessingScript": "// Modify the message variable below to pre process data\nreturn message;",
+      "postprocessingScript": "// This script executes once after a message has been processed\nreturn;",
+      "deployScript": "// This script executes once when the channel is deployed\n// You only have access to the globalMap and globalChannelMap here to persist data\nreturn;",
+      "shutdownScript": "// This script executes once when the channel is undeployed\n// You only have access to the globalMap and globalChannelMap here to persist data\nreturn;"
+    }
+  ],
+  "alerts": [],
+  "codeTemplates": [],
+  "serverSettings": {
+    "clearGlobalMap": true,
+    "maxQueueSize": 0,
+    "smtpSecure": "0",
+    "smtpAuth": false
+  },
+  "updateSettings": {
+    "firstLogin": false,
+    "updatesEnabled": true,
+    "statsEnabled": false,
+    "updateUrl": "http://updates.mirthcorp.com"
+  },
+  "globalScripts": {
+    "Shutdown": "// This script executes once when all channels shut down from a redeploy\n// You only have access to the globalMap here to persist data\nreturn;",
+    "Deploy": "// This script executes once when all channels start up from a redeploy\n// You only have access to the globalMap here to persist data\nreturn;",
+    "Preprocessor": "// Modify the message variable below to pre process data\n// This script applies across all channels\nreturn message;",
+    "Postprocessor": "// This script executes once after a message has been processed\n// This script applies across all channels\nreturn;"
+  },
+  "pluginProperties": {
+    "Message Pruner": {
+      "interval": "daily",
+      "allowBatchPruning": "1",
+      "pruningBlockSize": "0",
+      "time": "12:00 AM"
+    }
+  }
+}
