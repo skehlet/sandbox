@@ -1,0 +1,26 @@
+<!doctype html> 
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="/dnode.js" type="text/javascript"></script>
+<script type="text/javascript">
+window.onload = function() {
+
+  DNode.connect(function(remote) {
+  
+    remote.addHandler('rollcallResponse', function(message) {
+      console.log(message);
+    });
+    remote.send('public', 'rollcall');
+  
+  });
+
+};
+</script>
+</head>
+<body>
+
+n = <span id="result">?</span>
+
+</body>
+</html>
