@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-var redis = require('redis'),
-  client = redis.createClient();
+var config = require('./config'),
+  redis = require('redis'),
+  client = redis.createClient(config.redisPort, config.redisHost);
 
 
 client.on('pmessage', function(pattern, channel, message) {
