@@ -4,10 +4,12 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="UTF-8">
   <title>Distopia Monitor</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script src="/dnode.js" type="text/javascript"></script>
   <script src="underscore-min.js"></script>
   <script src="backbone.js"></script>
+  <script src="jquery.tmpl.js"></script>
   <script type="text/javascript">
 
 $(document).ready(function() {
@@ -22,37 +24,46 @@ $(document).ready(function() {
       this.collection.bind('add', this.addMessage);
     },
     addMessage: function(message) {
-      $(this.el).append('<li>' + JSON.stringify(message) + '</li>');
+      var snippet = $('#messageTemplate').tmpl(message.toJSON());
+      $(this.el).find('tr:last').after(snippet.html());
     }
   });
   
   var messages = new Messages();
   var messageDisplayView = new MessageDisplayView({
-    el: $('#message-list'),
+    el: $('#mytable'),
     collection: messages
   });
-
   
   DNode.connect(function(remote) {
     remote.addHandler('rollcallResponse', function(message) {
-      //console.log(message);
       messages.add(message);
     });
     remote.send('public', 'rollcall');
   });
 
-  
-  
-  
 });
   
   </script>
+
+  <script id="messageTemplate" type="text/x-jquery-tmpl">
+    <tr>
+      <td>${sender}</td>
+      <td>${subject}</td>
+      <td>${JSON.stringify(payload)}</td>
+    </tr>
+   </script>
+
 </head>
 <body>
 
-<ul id="message-list"></ul>
-
-
+<table id="mytable">
+<tr>
+<th>Sender</th>
+<th>Subject</th>
+<th>Payload</th>
+</tr>
+</table>
 
 </body>
 </html>
