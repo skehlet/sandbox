@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="UTF-8">
+  <title>Distopia Monitor</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script src="/dnode.js" type="text/javascript"></script>
+  <script src="underscore-min.js"></script>
+  <script src="backbone.js"></script>
+  <script type="text/javascript">
+
+$(document).ready(function() {
+
+  var Message = Backbone.Model.extend({});
+  var Messages = Backbone.Collection.extend({
+    model: Message    
+  });
+  var MessageDisplayView = Backbone.View.extend({
+    initialize: function() {
+      _.bindAll(this, 'addMessage')
+      this.collection.bind('add', this.addMessage);
+    },
+    addMessage: function(message) {
+      $(this.el).append('<li>' + JSON.stringify(message) + '</li>');
+    }
+  });
+  
+  var messages = new Messages();
+  var messageDisplayView = new MessageDisplayView({
+    el: $('#message-list'),
+    collection: messages
+  });
+
+  
+  DNode.connect(function(remote) {
+    remote.addHandler('rollcallResponse', function(message) {
+      //console.log(message);
+      messages.add(message);
+    });
+    remote.send('public', 'rollcall');
+  });
+
+  
+  
+  
+});
+  
+  </script>
+</head>
+<body>
+
+<ul id="message-list"></ul>
+
+
+
+</body>
+</html>
