@@ -1,0 +1,24 @@
+@CHARSET "UTF-8";
+
+/*
+#sidebar {float: left; width: 20%;}
+.post {float: right, width:79%;}
+#footer {clear:both;}
+*/
+
+header, nav, footer, article {display:block;}
+nav {float: left; width: 20%;}
+article {float: right; width: 79%;}
+footer {clear: both;}
+
+/* http://www.alistapart.com/articles/taminglists/ */
+ul {
+	list-style: none;
+	margin-left: 0;
+	padding-left: 1em;
+	text-indent: -1em;
+}
+
+#mytable {
+	width: 100%;
+}
