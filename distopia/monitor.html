@@ -41,6 +41,17 @@ $(document).ready(function() {
     remote.addHandler('.+', function(message) {
       messages.add(message);
     });
+    remote.monitor(function(time, args) {
+      var date = new Date();
+      date.setTime(time * 1000);
+      var message = new Message({
+        date: date,
+        sender: 'monitor',
+        subject: 'monitor',
+        payload: args
+      });
+      messages.add(message);
+    });
     remote.send('public', 'rollcall');
     remote.subscribe('authWatchOut');
   });

@@ -1,12 +1,18 @@
-var redis = require('redis');
+var redis = require('redis'); // npm install redis
+var uuid = require('node-uuid'); // npm install node-uuid
 
-var distopiaVersion = '0.0.1';
+var distopiaProtocolVersion = '1';
 
-exports.connect = function(name, host, port) {
+//exports.connect = function(name, host, port) {
+exports.connect = function(options) {
+  var name = options.name || uuid();
+  var realm = options.realm || 'default';
+  var host = options.host || '127.0.0.1';
+  var port = options.port || 6379;
   var handlers = [];
 
   function getChannel(channel) {
-    return 'distopia-' + distopiaVersion + '-' + channel;
+    return 'distopia-' + distopiaProtocolVersion + '-' + realm + '-' + channel;
   }
   
   function publish(to, subject, payload) {
@@ -18,7 +24,7 @@ exports.connect = function(name, host, port) {
     pub.publish(getChannel(to), JSON.stringify(packet));
   }
   
-  function handleMessage(channel, message) {
+  function handleMessage(pattern, channel, message) {
     message = JSON.parse(message);
     var sender = message.sender;
     var subject = message.subject;
@@ -34,9 +40,9 @@ exports.connect = function(name, host, port) {
   var pub = redis.createClient(port, host);
   var sub = redis.createClient(port, host);
 
-  sub.on('message', handleMessage);
-  sub.subscribe(getChannel('public')); 
-  sub.subscribe(getChannel(name)); 
+  sub.on('pmessage', handleMessage);
+  sub.psubscribe(getChannel('public')); 
+  sub.psubscribe(getChannel(name)); 
   
   var client = {};
   client.send = function(to, subject, payload) {
@@ -47,8 +53,18 @@ exports.connect = function(name, host, port) {
     handlers.push({pat: subject, fn: fn});
   }
   
-  client.subscribe = function(channel) {
-    sub.subscribe(getChannel(channel));
+  client.subscribe = function(channel, fn) {
+    sub.psubscribe(getChannel(channel));
+  }
+  
+  client.monitor = function(fn) {
+    var monitor = redis.createClient(port, host);
+    monitor.monitor(function(err, res) {
+      if (err) throw err;
+    });
+    monitor.on('monitor', function(time, args) {
+      fn(time, args);
+    });
   }
   
   return client;
