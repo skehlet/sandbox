@@ -27,5 +27,8 @@ var server = dnode(function(remote, conn) {
   this.addHandler = function(subject, fn) {
     this.client.addHandler(subject, fn);
   };
+  this.subscribe = function(channel) {
+    this.client.subscribe(channel);
+  };
 });
 server.listen(app);

@@ -3,6 +3,7 @@ var redis = require('redis');
 var distopiaVersion = '0.0.1';
 
 exports.connect = function(name, host, port) {
+  var handlers = [];
 
   function getChannel(channel) {
     return 'distopia-' + distopiaVersion + '-' + channel;
@@ -21,11 +22,11 @@ exports.connect = function(name, host, port) {
     message = JSON.parse(message);
     var sender = message.sender;
     var subject = message.subject;
+    message.date = new Date().toString();
     
-    if (handlers.hasOwnProperty(subject)) {
-      for (idx in handlers[subject]) {
-        console.log('firing handler for ' + subject);
-        handlers[subject][idx](message);
+    for (var i = 0; i < handlers.length; i++) {
+      if (subject.match(handlers[i].pat)) {
+        handlers[i].fn(message);
       }
     }
   }
@@ -42,12 +43,12 @@ exports.connect = function(name, host, port) {
     publish(to, subject, payload);
   };
   
-  var handlers = {};
   client.addHandler = function(subject, fn) {
-    if (!handlers.hasOwnProperty(subject)) {
-      handlers[subject] = [];
-    }
-    handlers[subject].push(fn);
+    handlers.push({pat: subject, fn: fn});
+  }
+  
+  client.subscribe = function(channel) {
+    sub.subscribe(getChannel(channel));
   }
   
   return client;

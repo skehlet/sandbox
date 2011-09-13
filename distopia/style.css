@@ -11,6 +11,10 @@ nav {float: left; width: 20%;}
 article {float: right; width: 79%;}
 footer {clear: both;}
 
+body {
+	font-family: helvetica, sans-serif;
+}
+
 /* http://www.alistapart.com/articles/taminglists/ */
 ul {
 	list-style: none;
@@ -19,6 +23,14 @@ ul {
 	text-indent: -1em;
 }
 
-#mytable {
+#myTable {
 	width: 100%;
+}
+
+#myTable td {
+	font-size: .80em;
+} 
+
+#myTable tr:nth-child(even) {
+  background-color: #fafafa;
 }

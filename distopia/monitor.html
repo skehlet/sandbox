@@ -24,22 +24,25 @@ $(document).ready(function() {
       this.collection.bind('add', this.addMessage);
     },
     addMessage: function(message) {
+      console.log('handling message: ' + JSON.stringify(message));
       var snippet = $('#messageTemplate').tmpl(message.toJSON());
-      $(this.el).find('tr:last').after(snippet.html());
+      //console.log('resulting html: ' + snippet.html());
+      $(this.el).find('tr:first').after('<tr>' + snippet.html() + '</tr>'); // TBD: why don't the <tr>s in the template work?
     }
   });
   
   var messages = new Messages();
   var messageDisplayView = new MessageDisplayView({
-    el: $('#mytable'),
+    el: $('#myTable'),
     collection: messages
   });
   
   DNode.connect(function(remote) {
-    remote.addHandler('rollcallResponse', function(message) {
+    remote.addHandler('.+', function(message) {
       messages.add(message);
     });
     remote.send('public', 'rollcall');
+    remote.subscribe('authWatchOut');
   });
 
 });
@@ -48,17 +51,19 @@ $(document).ready(function() {
 
   <script id="messageTemplate" type="text/x-jquery-tmpl">
     <tr>
+      <td>${date}</td>
       <td>${sender}</td>
       <td>${subject}</td>
-      <td>${JSON.stringify(payload)}</td>
+      <td>{{if payload}}${JSON.stringify(payload)}{{/if}}</td>
     </tr>
    </script>
 
 </head>
 <body>
 
-<table id="mytable">
+<table id="myTable">
 <tr>
+<th>Date</th>
 <th>Sender</th>
 <th>Subject</th>
 <th>Payload</th>

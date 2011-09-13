@@ -6,7 +6,6 @@ config.myName = 'client1';
 config.myVersion = '0.0.1';
 config.myDescription = 'A first client';
 
-
 var distopia = require('./distopia'),
   client = distopia.connect(config.myName, config.redisHost, config.redisPort);
 
