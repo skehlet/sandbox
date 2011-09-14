@@ -14,7 +14,14 @@
 
 $(document).ready(function() {
 
-  var Message = Backbone.Model.extend({});
+  var Message = Backbone.Model.extend({
+    defaults: {
+      date: '',
+      sender: '',
+      subject: '',
+      contents: ''
+    }
+  });
   var Messages = Backbone.Collection.extend({
     model: Message    
   });
@@ -38,22 +45,42 @@ $(document).ready(function() {
   });
   
   DNode.connect(function(remote) {
-    remote.addHandler('.+', function(message) {
+
+    remote.handleSubject('.+', function(message) {
+      if (message.subject == 'rollcallResponse') {
+        console.log('subscribing to ' + message.sender + 'Out');
+        remote.subscribe(message.sender + 'Out');
+        message.contents = 'Version ' + message.contents.version + ': ' + message.contents.description;
+        
+      } else if (message.sender == 'firewallRejectWatch' && message.subject == 'reject') {
+        var oldContents = message.contents;
+        message.contents = oldContents.src + ':' + oldContents.sport + ' -> ' + oldContents.dst + ':' + oldContents.dport;
+      }
+      
+      if (typeof(message.contents) == 'object') {
+        message.contents = JSON.stringify(message.contents);
+      }
+      
       messages.add(message);
     });
-    remote.monitor(function(time, args) {
-      var date = new Date();
-      date.setTime(time * 1000);
-      var message = new Message({
-        date: date,
-        sender: 'monitor',
-        subject: 'monitor',
-        payload: args
-      });
-      messages.add(message);
-    });
+
+    //remote.subscribe('authWatchOut');
+    //remote.subscribe('firewallRejectsOut');
+    //remote.psubscribe('*');
+
+//    remote.monitor(function(time, args) {
+//      var date = new Date();
+//      date.setTime(time * 1000);
+//      var message = new Message({
+//        date: date,
+//        sender: 'monitor',
+//        subject: 'monitor',
+//        payload: args
+//      });
+//      messages.add(message);
+//    });
+
     remote.send('public', 'rollcall');
-    remote.subscribe('authWatchOut');
   });
 
 });
@@ -62,10 +89,10 @@ $(document).ready(function() {
 
   <script id="messageTemplate" type="text/x-jquery-tmpl">
     <tr>
-      <td>${date}</td>
+      <td>${time}</td>
       <td>${sender}</td>
       <td>${subject}</td>
-      <td>{{if payload}}${JSON.stringify(payload)}{{/if}}</td>
+      <td>${contents}</td>
     </tr>
    </script>
 
@@ -77,7 +104,7 @@ $(document).ready(function() {
 <th>Date</th>
 <th>Sender</th>
 <th>Subject</th>
-<th>Payload</th>
+<th>Contents</th>
 </tr>
 </table>
 
